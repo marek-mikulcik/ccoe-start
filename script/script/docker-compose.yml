@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  cli:
+    image: mcr.microsoft.com/azure-cli
+    volumes: 
+      - /C/SRDev/Docker/aci/:/usr/app/aci/    
+      - /C/SRDev/Keys/:/usr/keys/
+    environment:
+      - http_proxy=http://gate-zrh.swissre.com:8080/
+      - https_proxy=http://gate-zrh.swissre.com:9443/
+      - REQUESTS_CA_BUNDLE=/usr/keys/cacert.pem  #locally dowloaded from https://wiki.swissre.com/display/KB/How+to+solve+the+Azure+CLI+SSL+handshake+problem
+    tty: true
