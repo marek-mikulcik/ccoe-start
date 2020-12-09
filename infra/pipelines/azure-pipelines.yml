@@ -1,0 +1,49 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  infraBuildTemplate: 'build-infra.template.yml'
+  infraReleaseTemplate: 'deploy-infra.template.yml'  
+
+stages:
+- stage: CI
+  displayName: Continuous Integration
+  jobs:
+  - job: Build
+    steps:
+    - script: |
+        echo Add other tasks to build, test, and deploy your project.
+        echo See https://aka.ms/yaml
+      displayName: 'Run a multi-line script'
+    - template: ${{ variables.infraBuildTemplate }}
+
+- stage: Dev_Release
+  displayName: "Release to Dev"    
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  dependsOn: CI
+  jobs:
+    - deployment:
+      displayName: "Release to Dev"
+      environment: Dev
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: ${{ variables.infraReleaseTemplate }}
+              parameters:
+                serviceConnectionName: Terraform APMID DEV
+                tfRgName: APMID-dev-ccoe-tf-rg
+                tfStgName: apmidtfstg
+                kvName: apmid-dev-ccoe-tf-kv
+                tfVarName: terraform.dev.tfvars
+                subscriptionId: 000-
+                clientId: 000-
+
